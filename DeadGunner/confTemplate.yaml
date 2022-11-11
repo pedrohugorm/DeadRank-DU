@@ -1,4 +1,4 @@
-name: DeadGunner v3.5.4
+name: DeadGunner CUSTOM v3.5.4
 pvp: true
 
 slots:
@@ -53,6 +53,14 @@ handlers:
       args: ['overlap']
       lua: |
 {{unit.onTimer.overlap.lua}}
+    onTimer:
+      args: ['dps']
+      lua: |
+{{unit.onTimer.dps.lua}}
+    onTimer:
+      args: ['debug_dps']
+      lua: |
+{{unit.onTimer.debug_dps.lua}}
   system:
     onStart:
       lua: |
@@ -155,3 +163,7 @@ handlers:
     onElementDestroyed(targetId,elementId):
       lua: |
 {{weapon.onElementDestroyed.lua}}
+  shield_1:
+    onAbsorbed(hitpoints, rawHitpoints):
+      lua: |
+{{shield.onAbsorbed.lua}}

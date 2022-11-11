@@ -7,3 +7,7 @@ if dmgTracker[tostring(targetId)] then
 else
     dmgTracker[tostring(targetId)] = damage
 end
+
+if track_dps then
+    selfDps = addDps(selfDps, damage)
+end
