@@ -1,5 +1,7 @@
 Nav:update()
 
+arkTime = system.getArkTime()
+
 -- Check player seated status --
 seated = player.isSeated()
 if seated == 1 and player.isFrozen() == 0 then
@@ -87,7 +89,6 @@ if auto_follow then
             followID = targetID
             targetSpeed = db_1.getFloatValue('targetSpeed') + followSpeedMod
             targetDist = db_1.getFloatValue('targetDistance')
-            if db_1.hasKey('followDistance') == 1 then followDistance = db_1.getFloatValue('followDistance') else followDistance = defautlFollowDistance end
 
             -- Set cruise speed to targets speed
             brakeInput = 0
@@ -250,7 +251,6 @@ if construct.isWarping() == 1 then
     brakesOn = true
 end
 -----------------------------------------
-
 
 -- Generate Screen overlay --
 if speed ~= nil then generateScreen() end
