@@ -170,6 +170,12 @@ enemyDpsHistory = {}
 primary = nil
 --------------
 
+--- Shield Cues ---
+cue25pDone = false
+cue50pDone = false
+cue75pDone = false
+-------------------
+
 bootTimer = 0
 if validatePilot then
     local validPilot = false

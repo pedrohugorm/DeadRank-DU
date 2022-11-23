@@ -47,6 +47,10 @@ handlers:
       args: ['debug_dps']
       lua: |
 {{unit.onTimer.debug_dps.lua}}
+    onTimer:
+      args: ['shields']
+      lua: |
+{{unit.onTimer.shields.lua}}
   system:
     onStart:
       lua: |
