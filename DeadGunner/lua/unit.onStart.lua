@@ -18,12 +18,12 @@ printCombatLog = true --export Print weapon hits/misses to lua
 validatePilot = false --export
 abandonedCoreDist = 10 --export Distance in AR to show abandoned cores in SU
 dangerWarning = 4 --export
-bottomHUDLineColorSZ = 'rgba(125, 150, 160, 1)' --export
-bottomHUDFillColorSZ = 'rgba(20, 114, 209, 0.75)' --export
-textColorSZ = 'rgba(200, 225, 235, 1)' --export
-bottomHUDLineColorPVP = 'lightgrey' --export
-bottomHUDFillColorPVP = 'rgba(255, 0, 0, 0.75)' --exporta
-textColorPVP = 'black' --export
+bottomHUDLineColorSZ = 'rgba(150, 175, 185, .75)' --export
+bottomHUDFillColorSZ = 'rgba(25, 25, 50, 0.35)' --export
+textColorSZ = 'rgba(225, 250, 265, 1)' --export
+bottomHUDLineColorPVP = 'rgba(220, 50, 50, .75)' --export
+bottomHUDFillColorPVP = 'rgba(175, 75, 75, 0.30)' --export
+textColorPVP = 'rgba(225, 250, 265, 1)' --export
 neutralLineColor = 'lightgrey' --export
 neutralFontColor = 'white' --export
 L_Shield_HP = 11500000 --export
@@ -55,6 +55,8 @@ radarInfoWidgetScale = 11.25 --export
 radarInfoWidgetXmin = 67.5 --export
 radarInfoWidgetYmin = -0.9 --export
 radarInfoWidgetScalemin = 10 --export
+
+lAlt = false
 -----------------------------------------
 
 -- Choose DB for seat --
@@ -87,6 +89,9 @@ if useDB and write_db ~= nil then
 end
 
 --- Radar Initial Values ---
+constructPosition = vec3(construct.getWorldPosition())
+manual_trajectory = {}
+trajectory_calc = {}
 auto_follow = false
 followID = nil
 cr = nil
@@ -155,6 +160,12 @@ inSZ = construct.isInPvPZone() == 0
 SZD = construct.getDistanceToSafeZone()
 
 --- Weapons --
+dpsTracker = {}
+dpsChart = {}
+dpsChart[1] = 0
+dpsChart[2] = 0
+dpsChart[3] = 0
+dpsChart[4] = 0
 weaponDataList = {}
 shieldDmgTrack = {
     ['L'] = L_Shield_HP,

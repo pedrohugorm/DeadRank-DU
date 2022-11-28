@@ -14,7 +14,7 @@ table.insert(predefinedTags,'freight')
 showAlerts = false
 
 ---------------------------------------
-hudVersion = 'v4.0.6'
+hudVersion = 'v4.1.1'
 system.print('-- '..hudVersion..' --')
 useDB = true --export
 caerusOption = false --export
@@ -24,12 +24,12 @@ autoVent = true --export Autovent shield at 0 hp
 homeBaseLocation = '' --export Location of home base (to turn off shield)
 homeBaseDistance = 5 --export Distance from home base to turn off shield (km)
 defaultHoverHeight = 42 --export
-topHUDLineColorSZ = 'rgba(125, 150, 160, 1)' --export
-topHUDFillColorSZ = 'rgba(20, 114, 209, 0.75)' --export
-textColorSZ = 'rgba(200, 225, 235, 1)' --export
-topHUDLineColorPVP = 'lightgrey' --export
-topHUDFillColorPVP = 'rgba(255, 0, 0, 0.75)' --export
-textColorPVP = 'black' --export
+topHUDLineColorSZ = 'rgba(150, 175, 185, .75)' --export
+topHUDFillColorSZ = 'rgba(25, 25, 50, 0.35)' --export
+textColorSZ = 'rgba(225, 250, 265, 1)' --export
+topHUDLineColorPVP = 'rgba(220, 50, 50, .75)' --export
+topHUDFillColorPVP = 'rgba(175, 75, 75, 0.30)' --export
+textColorPVP = 'rgba(225, 250, 265, 1)' --export
 fuelTextColor = 'rgba(200, 225, 235, 1)' --export
 neutralFontColor = 'white' --export
 neutralLineColor = 'lightgrey' --export
@@ -91,7 +91,8 @@ shipInfoWidgetX = 76.5
 shipInfoWidgetY = -0.9
 shipInfoWidgetScale = 10
 
-
+-- WayPoint File Info
+validWaypointFiles = {}
 ------------------------------------
 
 userCode = {}
@@ -135,6 +136,12 @@ unit.setTimer('code',0.25)
 
 ---- Initialization ---
 arkTime = system.getArkTime()
+dpsTracker = {}
+dpsChart = {}
+dpsChart[1] = 0
+dpsChart[2] = 0
+dpsChart[3] = 0
+dpsChart[4] = 0
 constructPosition = vec3(construct.getWorldPosition())
 cr = nil
 followID = nil
@@ -143,13 +150,45 @@ AR_Custom_Points = {}
 AR_Custom = false
 AR_Temp = false
 AR_Temp_Points = {}
-if pcall(require,'autoconf/custom/AR_Waypoints') then 
-    waypoints = require('autoconf/custom/AR_Waypoints') 
-    for name,pos in pairs(waypoints) do
-        AR_Custom_Points[name] = pos
-        AR_Custom = true
+
+AR_Array = {}
+
+legacyFile = false
+if pcall(require,'autoconf/custom/DeadRemote_CustomFileIndex') then
+    customFiles = require('autoconf/custom/DeadRemote_CustomFileIndex')
+    if type(customFiles) == "table" then
+        for waypointFileId,waypointFile in ipairs(customFiles) do
+            system.print('Found waypointFileId: '..waypointFileId..' displayName='..waypointFile.DisplayName..' waypointFilePath='..waypointFile.FilePath)
+            if pcall(require,waypointFile.FilePath) then
+                waypoints = require(waypointFile.FilePath)
+                if type(waypoints) == "table" then
+                    table.insert(validWaypointFiles,waypointFile)
+                    AR_Array[#validWaypointFiles] = {}
+                    system.print('Adding waypoints from '..waypointFile.FilePath)
+                    for name,pos in pairs(waypoints) do
+                        AR_Custom_Points[name] = pos
+                                        AR_Array[#validWaypointFiles][name]=pos
+                        AR_Custom = true
+                    end
+                else
+                    system.print('Failed to load waypoints from '..waypointFile.FilePath)
+                end
+            else
+                system.print('Failed to load waypoints from '..waypointFile.FilePath)
+            end
+        end
+    end
+else
+    legacyFile = true
+    if pcall(require,'autoconf/custom/AR_Waypoints') then 
+        waypoints = require('autoconf/custom/AR_Waypoints') 
+        for name,pos in pairs(waypoints) do
+            AR_Custom_Points[name] = pos
+            AR_Custom = true
+        end
     end
 end
+
 screenHeight = system.getScreenHeight()
 screenWidth = system.getScreenWidth()
 maxFuel = 0
@@ -248,7 +287,7 @@ end
 
 -- landing gear
 -- make sure every gears are synchonized with the first
-gearExtended = (Nav.control.isAnyLandingGearDeployed() == 1) -- make sure it's a lua boolean
+gearExtended = (Nav.control.isAnyLandingGearDeployed() == 1) -- make sure it is a lua boolean
 if gearExtended then
     Nav.control.deployLandingGears()
 else

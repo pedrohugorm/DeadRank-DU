@@ -1,5 +1,16 @@
 # Dead's PvP Script Suite
 
+## New features in 4.1.1
+ - Trajectory Estimator:
+   1) Target a construct (identification not required)
+   2) Aim at the construct (diamond on the center of the screen)
+   3) Hit the `space bar` to mark it's current position
+   4) Repeat steps (2) and (3) again
+   5) Destination is set 20su along the calculated trajectory, estimated travel indicator is started, estimated target speed is printed to lua chat
+ - Damage Chart: Chart showing your Outgoing DPS vs Incoming DPS. Chart shows totals, not DPS against a specific target and is avg'd into 10 second chunks
+ - Revamped default color scheme to be a little more immersive
+ - `alt`+`shift`+`4` now sets your auto-pilot destination to your home base location (if you have one set/saved to the databank)
+
 ## Downloads
 Simply right-click on the links below and select "Save Link As..." to download the configuration files:
  - [DeadGunner.conf](https://raw.githubusercontent.com/Deadrank/DeadRank-DU/main/DeadGunner.conf)
@@ -165,6 +176,17 @@ The HUD also includes many other smaller features including:
 ## Additional Files
 This remote HUD can take advantage of additional files locally put in the `lua/autoconf/custom` folder. The advantage of using these custom files is that none of the data is stored on the controller itself. So sensative information can't be retrieved from the controller or databank even if the ship is captured. The two files the remote uses are the following.
 
+### DeadRemote_CustomFileIndex.lua
+This file is used to list out all custom waypoint files you will use with DeadRemote. Each file can have a custom display name which is shown when cycling between the various AR Modes. The format of the file is the following:
+```
+return {
+	{DisplayName = "Default File",FilePath = 'autoconf/custom/AR_Waypoints'},
+	{DisplayName = "Asteroids: Near SafeZone",FilePath = 'autoconf/custom/waypoints/Asteroids_NearSafeZone'},
+	{DisplayName = "Asteroids: Near Jago",FilePath = 'autoconf/custom/waypoints/Asteroids_NearJago'},
+	{DisplayName = "Asteroids: Near Teoma",FilePath = 'autoconf/custom/waypoints/Asteroids_NearTeoma'},
+	{DisplayName = "Personal Waypoints",FilePath = 'autoconf/custom/waypoints/Personal_Waypoints'}
+}
+```
 ### AR_Waypoints.lua
 This file is used to load AR points into your HUD that you use on a regular basis so they do not have to be re-entered every time the remote starts. The format of the file is the following:
 ```

@@ -196,7 +196,7 @@ end
 -- Engine commands
 local keepCollinearity = 1 -- for easier reading
 local dontKeepCollinearity = 0 -- for easier reading
-local tolerancePercentToSkipOtherPriorities = 1 -- if we are within this tolerance (in%), we don't go to the next priorities
+local tolerancePercentToSkipOtherPriorities = 1 -- if we are within this tolerance (in%), we do not go to the next priorities
 
 -- Rotation
 local angularAcceleration = torqueFactor * (targetAngularVelocity - constructAngularVelocity)
@@ -206,12 +206,14 @@ Nav:setEngineTorqueCommand('torque', angularAcceleration, keepCollinearity, 'air
 
 -- Brakes
 local brakeAcceleration = vec3()
-if autopilot and autopilot_dest ~= nil and vec3(constructPosition - autopilot_dest):len() <= brakeDist + AP_Brake_Buffer or (closestPlanetDist < 0.65/.000005 and autopilot) then
-    brakeAcceleration = -maxBrake * constructVelocityDir
-    brakeInput = 1
-elseif autopilot and autopilot_dest ~= nil and not brakesOn then
-    brakeAcceleration = vec3()
-    brakeInput = 0
+if autopilot then
+    if autopilot_dest ~= nil and vec3(constructPosition - autopilot_dest):len() <= brakeDist + AP_Brake_Buffer or closestPlanetDist < 0.65/.000005 then
+        brakeAcceleration = -maxBrake * constructVelocityDir
+        brakeInput = 1
+    elseif autopilot_dest ~= nil and not brakesOn then
+        brakeAcceleration = vec3()
+        brakeInput = 0
+    end
 else
     brakeAcceleration = -finalBrakeInput * (brakeSpeedFactor * constructVelocity + brakeFlatFactor * constructVelocityDir)
 end

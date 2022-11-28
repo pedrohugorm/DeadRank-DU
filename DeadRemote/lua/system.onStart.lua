@@ -52,7 +52,7 @@ function convertWaypoint(wp)
 end
 
 function string.starts(String,Start)
-   return string.sub(String,1,string.len(Start))==Start
+    return string.sub(String,1,string.len(Start))==Start
 end
 
 function formatNumber(val, numType)
@@ -111,7 +111,7 @@ function pipeDist(A,B,loc,reachable)
 
         -- If neither above condition was met, then the
         -- destination point must have be directly out from
-        -- somewhere along the warp pipe. Let's calculate
+        -- somewhere along the warp pipe. Lets calculate
         -- that distance
         else
             dist = vec3(AE:cross(BE)):len()/vec3(AB):len()
@@ -175,15 +175,15 @@ end
 
 function contains(tablelist, val)
     for i=1,#tablelist do
-       if tablelist[i] == val then 
-          return true
-       end
+        if tablelist[i] == val then 
+            return true
+        end
     end
     return false
- end
+    end
 
 
- function WeaponWidgetCreate()
+    function WeaponWidgetCreate()
     if type(weapon) == 'table' and #weapon > 0 then
         local WeaponPanaelIdList = {}
         for i = 1, #weapon do
@@ -404,7 +404,7 @@ function positionInfoWidget()
         L ]] .. tostring(.0*screenWidth) .. ' ' .. tostring(.001*screenHeight) .. [[
         L ]] .. tostring(.0*screenWidth) .. ' ' .. tostring(.0155*screenHeight) .. [[ 
         "
-        stroke="]]..lineColor..[[" stroke-width="1" fill="]]..bgColor..[[" />
+        stroke="]]..lineColor..[[" stroke-width="1" fill="]]..bgColor..[["/>
 
         <path d="
         M ]] .. tostring(1.0*screenWidth) .. ' ' .. tostring(.0155*screenHeight) .. [[ 
@@ -443,12 +443,32 @@ end
 
 function planetARWidget()
     local arw = planetAR
-    arw = arw .. [[
-        <svg width="100%" height="100%" style="position: absolute;left:0%;top:0%;font-family: Calibri;">
-            <text x="]].. tostring(.001 * screenWidth) ..[[" y="]].. tostring(.03 * screenHeight) ..[[" style="fill: ]]..fuelTextColor..[[" font-size="1.42vh" font-weight="bold">Augmented Reality Mode: ]]..AR_Mode..[[</text>
-        </svg>
-    ]]
 
+    if legacyFile then
+        arw = arw .. [[
+            <svg width="100%" height="100%" style="position: absolute;left:0%;top:0%;font-family: Calibri;">
+                <text x="]].. tostring(.001 * screenWidth) ..[[" y="]].. tostring(.03 * screenHeight) ..[[" style="fill: ]]..fuelTextColor..[[" font-size="1.42vh" font-weight="bold">Augmented Reality Mode: ]]..AR_Mode..[[</text>
+            </svg>
+            ]]
+    else
+        if string.find(AR_Mode,"FILE") ~= nil then
+            i, j = string.find(AR_Mode,"FILE")
+            fileNumber = tonumber(string.sub(AR_Mode,j+1))
+            --Catch if they reduced the number of custom files
+            if fileNumber > #validWaypointFiles then AR_Mode= "None" end
+            arw = arw .. [[
+                <svg width="100%" height="100%" style="position: absolute;left:0%;top:0%;font-family: Calibri;">
+                    <text x="]].. tostring(.001 * screenWidth) ..[[" y="]].. tostring(.03 * screenHeight) ..[[" style="fill: ]]..fuelTextColor..[[" font-size="1.42vh" font-weight="bold">Augmented Reality Mode: ]]..validWaypointFiles[fileNumber].DisplayName..[[</text>
+                </svg>
+                ]]
+        else
+            arw = arw .. [[
+            <svg width="100%" height="100%" style="position: absolute;left:0%;top:0%;font-family: Calibri;">
+                <text x="]].. tostring(.001 * screenWidth) ..[[" y="]].. tostring(.03 * screenHeight) ..[[" style="fill: ]]..fuelTextColor..[[" font-size="1.42vh" font-weight="bold">Augmented Reality Mode: ]]..AR_Mode..[[</text>
+            </svg>
+            ]]
+        end
+    end
     return arw
 end
 
@@ -456,8 +476,8 @@ function shipNameWidget()
     local snw = ''
     snw = snw .. [[
         <svg width="100%" height="100%" style="position: absolute;left:0%;top:0%;font-family: Calibri;">
-            <text x="]].. tostring(.90 * screenWidth) ..[[" y="]].. tostring(.03 * screenHeight) ..[[" style="fill: ]]..fuelTextColor..[[" font-size="1.42vh" font-weight="bold">Ship Name: ]]..construct.getName()..[[</text>
-            <text x="]].. tostring(.90 * screenWidth) ..[[" y="]].. tostring(.042 * screenHeight) ..[[" style="fill: ]]..fuelTextColor..[[" font-size="1.42vh" font-weight="bold">Ship Code: ]]..tostring(construct.getId())..[[</text>
+            <text x="]].. tostring(.90 * screenWidth) ..[[" y="]].. tostring(.13 * screenHeight) ..[[" style="fill: ]]..fuelTextColor..[[" font-size="1.42vh" font-weight="bold">Ship Name: ]]..construct.getName()..[[</text>
+            <text x="]].. tostring(.90 * screenWidth) ..[[" y="]].. tostring(.142 * screenHeight) ..[[" style="fill: ]]..fuelTextColor..[[" font-size="1.42vh" font-weight="bold">Ship Code: ]]..tostring(construct.getId())..[[</text>
         </svg>
     ]]
     return snw
@@ -842,6 +862,43 @@ function resistWidget()
     return rw
 end
 
+function dpsWidget()
+    local dw = ''
+
+    local x,y,s
+    y = 28.25
+    x = 1.75
+    s = 11.25
+    local ts = system.getArkTime()
+    if dpsTracker[string.format('%.0f',ts/10)] == nil then
+        dpsTracker[string.format('%.0f',(ts-10)/10)] = nil
+        dpsTracker[string.format('%.0f',ts/10)] = 0
+        table.insert(dpsChart,1,0)
+    end
+    if #dpsChart > 24 then
+        table.remove(dpsChart,#dpsChart)
+    end
+    local cDPS = (dpsChart[1]+dpsChart[2])/20000
+    dw = dw .. [[
+        <svg style="position: absolute; top: ]]..y..[[vh; left: ]]..x..[[vw;" viewBox="0 -10 286 240" width="]]..s..[[vw">
+            <rect x="6%" y="6%" width="87%" height="90%" rx="1%" ry="1%" fill="rgba(0,0,0,0)" />
+            <polygon style="stroke-width: 2px; stroke-linejoin: round; fill: rgba(0,0,0,0); stroke: ]]..neutralLineColor..[[;" points="22 15 266 15 266 32 252 46 22 46"/>
+            <polygon style="stroke-linejoin: round; fill: rgba(0,0,0,0); stroke: ]]..neutralLineColor..[[;" points="18 17 12 22 12 62 15 66 15 125 18 127"/>
+            <line style="fill: none; stroke-linecap: round; stroke-width: 2px; stroke: ]]..neutralLineColor..[[;" x1="22" y1="127" x2="266" y2="127"/>
+            <text style="fill: ]]..neutralFontColor..[[; font-size: 17px; paint-order: fill; stroke-width: 0.5px; white-space: pre;" x="37" y="35">DPS Chart</text>
+            <text style="fill: rgba(175, 75, 75, 0.90); font-size: 17px; paint-order: fill; stroke-width: 0.5px; white-space: pre;" x="175" y="35">]].. string.format('%.2f',cDPS) ..[[k</text>
+            ]]
+        
+    for k,v in pairs(dpsChart) do
+        dw = dw .. [[<circle cx="]].. tostring(23 + k*10) ..[[" cy="]].. tostring(123 - 2*v/10000) ..[[" r="2.25px" style="fill:rgba(175, 75, 75, 0.90);rgba(175, 75, 75, 0.90);stroke-width:0;opacity:0.75;" />]]
+    end
+
+    dw = dw.. [[
+        </svg>
+    ]]
+    return dw
+end
+
 function transponderWidget()
     local tw = ''
     if transponder_1 ~= nil then
@@ -907,7 +964,8 @@ function minimalShipInfo()
         <svg width="100%" height="100%" style="position: absolute;left:0%;top:0%;font-family: Calibri;">
             <text x="]].. tostring(.001 * screenWidth) ..[[" y="]].. tostring(.015 * screenHeight) ..[[" style="fill: ]]..fuelTextColor..[[" font-size="1.42vh" font-weight="bold">Auto Pilot Mode: ]]..apStatus..eta..[[</text>]]
     if caerusOption then
-        msi = msi .. [[<text x="]].. tostring(.547 * screenWidth) ..[[" y="]].. tostring(.92 * screenHeight) ..[[" style="fill: ]]..topHUDFillColorSZ..[[" font-size="1.42vh" font-weight="bold">Speed: ]] .. formatNumber(speed,'speed') .. [[</text>]]
+        msi = msi .. [[<text x="]].. tostring(.547 * screenWidth) ..[[" y="]].. tostring(.92 * screenHeight) ..[[" style="fill: rgb(73, 251, 53);" font-size="1.42vh" font-weight="bold">Speed: ]] .. formatNumber(speed,'speed') .. [[</text>]]
+        msi = msi .. [[<text x="]].. tostring(.547 * screenWidth) ..[[" y="]].. tostring(.935 * screenHeight) ..[[" style="fill: ]]..topHUDFillColorSZ..[[" font-size="1.42vh" font-weight="bold">SZ Dist: ]]..SZDStr..[[</text></text>]]
     end
     msi = msi .. [[</svg>
     ]]
@@ -987,7 +1045,12 @@ function generateScreen()
     if db_1 and db_1.hasKey('minimalWidgets') then
         minimalWidgets = db_1.getIntValue('minimalWidgets') == 1
     end 
-    html = [[ <html> <body style="font-family: Calibri;"> ]]
+    html = [[ <html>
+        <style>
+            svg { filter: drop-shadow(0px 0px 1px rgba(255,255,255,.5));}
+        </style>
+            <body style="font-family: Calibri;">
+     ]]
     html = html .. brakeWidget()
     if showScreen then 
         if minimalWidgets then
@@ -1007,6 +1070,7 @@ function generateScreen()
             html = html .. [[<svg viewBox="0 0 500 500" width="5vw" height="5vh" style="position: absolute; top: 7vh; left: 0vw;">]] .. logoSVG .. [[
                 </svg>]]
         end
+        html = html .. dpsWidget()
     end
     html = html .. planetARWidget()
     html = html .. helpWidget()
@@ -1184,7 +1248,7 @@ function Kinematic.computeDistanceAndTime(initial,final,mass,thrust,t50,brakeThr
         end
 
         local speedchk = speedUp and function(s) return s >= final end or
-                                     function(s) return s <= final end
+                                        function(s) return s <= final end
         timeToMax  = 2*t50
 
         if speedchk(v(timeToMax)) then
@@ -1210,7 +1274,7 @@ function Kinematic.computeDistanceAndTime(initial,final,mass,thrust,t50,brakeThr
         end
         initial = v(timeToMax)
     end
-    -- At full thrust, motion follows Newton's formula:
+    -- At full thrust, motion follows Newtons formula:
     local a = a0+b0
     local t = Kinematic.computeAccelerationTime(initial, a, final)
     local d = initial*t + a*t*t/2
