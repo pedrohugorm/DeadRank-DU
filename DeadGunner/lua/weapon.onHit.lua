@@ -17,7 +17,3 @@ else
     dpsTracker[string.format('%.0f',ts/10)] = damage
     table.insert(dpsChart,1,damage)
 end
-
-if track_dps then
-    selfDps = addDps(selfDps, damage)
-end

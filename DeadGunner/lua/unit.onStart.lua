@@ -36,10 +36,6 @@ radarBuffer = 0.00001
 warning_size = 0.75 --export How large the warning indicators should be
 warning_outline_color = 'rgb(255, 60, 60)' --export
 warning_fill_color = 'rgba(50, 50, 50, 0.9)' --export
-track_dps = true --export Tracks DPS dealt by your weapons and the enemy
-maxChartPointCount = 10
-dps_timer = 2 --export dps aggregation timer in seconds
-debug_dps = false
 
 antiMatterColor = 'rgb(56, 255, 56)' --export
 electroMagneticColor = 'rgb(27, 255, 217)' --export
@@ -322,12 +318,4 @@ if radar_1 ~= nil then
         ranges['l'] = 400000
         radarRange = ranges[radar_size]
     end
-end
-
-if (track_dps) then
-    unit.setTimer('dps', 3)
-end
-
-if (debug_dps) then
-    unit.setTimer('debug_dps', 1.3)    
 end
