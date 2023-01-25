@@ -1,10 +1,12 @@
 cPos = vec3(construct.getWorldPosition())
 local inWS = false
+radarFriendlies[tostring(id)] = nil
 if warpScan then
     for k,v in pairs(warpScan) do if id == k then inWS = true break end end
-    if not inSZ and SZD*0.000005 > radarBuffer then
+    if not inSZ and SZD*0.000005 > radarBuffer or szAlerts then
         system.stopSound()
         system.playSound('contact_lost.mp3')
+        if szAlerts then system.print(string.format('-- [%s] %s left radar',id,radar_1.getConstructName(id))) end
         if inWS then
             local cored = ''
             if radar_1.isConstructAbandoned(id) == 1 then
