@@ -64,6 +64,7 @@ showDockingPanel = false --export
 showFuelPanel = false --export
 showHelper = false --export
 showShieldWidget = false --export
+dampening = true --inertial dampening
 
 minimalWidgets = false
 -- HP (Shield/CCS) widget --
